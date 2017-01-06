@@ -2,7 +2,7 @@ require 'jq'
 
 module JQ::Extend
   def jq(program, &block)
-    src = MultiJson.dump(self)
+    src = JQ::Parser.json_driver.dump(self)
     JQ(src).search(program, &block)
   end
 end

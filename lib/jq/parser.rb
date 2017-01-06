@@ -4,7 +4,7 @@ class JQ::Parser
   def initialize(src, options = {})
     @src = kind_of_io?(src) ? src : src.to_s
     @options = {
-      :parse_json => true,
+      parse_json: true,
     }.merge(options)
   end
 
@@ -39,6 +39,19 @@ class JQ::Parser
     return retval
   end
 
+  def json_driver
+    @json_driver ||= @options[:json_driver] || self.class.json_driver
+  end
+
+  def self.json_driver
+    begin
+      JSON
+    rescue NameError
+      require 'json'
+      JSON
+    end
+  end
+
   private
   def jq(program)
     jq_core = nil
@@ -53,7 +66,7 @@ class JQ::Parser
 
   def parse_json(str)
     if @options[:parse_json]
-      MultiJson.load("[#{str}]").first
+      json_driver.load("[#{str}]").first
     else
       str
     end
